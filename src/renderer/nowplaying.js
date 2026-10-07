@@ -1,17 +1,20 @@
 import { applySharedTheme } from '../lyrics/shared-theme.js';
 import { createRhythmAnimator } from './dynamic-rhythm.js';
+import { createContentTransition } from './content-transition.js';
 const $=id=>document.getElementById(id);
 const rhythm=createRhythmAnimator(document.querySelector('.rhythm path'));
 let socket, online=false, song=null, options={}, progress={seconds:0,at:Date.now(),playing:false};
 let visible=true, lastArt='', generation=0, timer=null;
 let fadeTimer=null, fadeGeneration=0;
 const text=(id,value)=>{const element=$(id);if(element&&element.textContent!==value)element.textContent=value;};
+const songKey=value=>value?String(value.id??[value.title,value.artist].join('|'))+'|'+(value.cover||''):'';
+const transition=createContentTransition({element:$('card'),visible:()=>show()&&!$('card').hidden,prepare:data=>preloadArtwork(data.song?.cover||''),apply:displaySnapshot});
 function sourceVisible(){return visible && (!!window.obsstudio || !document.hidden);}
 function show(){return online && !!song?.title && sourceVisible() && !(options['hide-paused']!==false && !progress.playing);}
 function presence(){if(socket?.readyState===WebSocket.OPEN)socket.send(JSON.stringify({type:'presence',obs:!!window.obsstudio,visible:sourceVisible(),ready:show()}));}
 function time(seconds){seconds=Math.max(0,Math.floor(seconds));return String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');}
 function tick(){
-    if(!show())return;
+    if(!show()||transition.pending)return;
     const duration=Number(song.duration)||0;
     const position=Math.max(0,Math.min(duration||Infinity,progress.seconds+(progress.playing?Math.max(0,Date.now()-progress.at)/1000:0)));
     text('elapsed',time(position));text('duration',time(duration));
@@ -53,11 +56,24 @@ function update(){
     if(show() && progress.playing && options.progress!==false && song.duration>0)timer=setInterval(tick,250);
     tick();presence();
 }
-function artwork(url){
+function preloadArtwork(url){
+    return new Promise(resolve=>{
+        let parsed;try{parsed=new URL(url);}catch{return resolve({url,loaded:false});}
+        if(!['http:','https:'].includes(parsed.protocol)||parsed.username||parsed.password)return resolve({url,loaded:false});
+        const image=new Image();image.referrerPolicy='no-referrer';let done=false;
+        const finish=loaded=>{if(done)return;done=true;clearTimeout(timeout);image.onload=null;image.onerror=null;resolve({url,loaded});};
+        const timeout=setTimeout(()=>finish(false),1600);image.onload=()=>finish(true);image.onerror=()=>finish(false);image.src=url;
+    });
+}
+function artwork(url,prepared){
     if(lastArt===url)return;lastArt=url;const current=++generation;
     $('card').classList.remove('has-art');
     $('cover').hidden=true;$('cover').removeAttribute('src');$('placeholder').hidden=false;
     if(!url)return;
+    if(prepared?.url===url&&prepared.loaded){
+        $('cover').src=url;$('cover').hidden=false;$('placeholder').hidden=true;$('card').classList.add('has-art');
+        return;
+    }
     let parsed;try{parsed=new URL(url);}catch{return;}
     if(!['http:','https:'].includes(parsed.protocol)||parsed.username||parsed.password)return;
     const image=new Image();image.referrerPolicy='no-referrer';
@@ -65,26 +81,34 @@ function artwork(url){
     image.onerror=()=>{if(current===generation){$('cover').hidden=true;$('placeholder').hidden=false;$('card').classList.remove('has-art');}};
     image.src=url;
 }
+function displaySnapshot(data,prepared){
+    song=data.song;options=data.options||{};progress=data.progress||{seconds:0,at:Date.now(),playing:false};
+    text('title',song?.title||'');text('artist',song?.artist||'');text('album',song?.album||'');
+    artwork(song?.cover||'',prepared);update();
+}
 function connect(){
     socket=new WebSocket('ws://'+location.host+'/song-view');
     socket.onopen=presence;socket.onerror=()=>{};
-    socket.onclose=()=>{online=false;update();setTimeout(connect,2500);};
+    socket.onclose=()=>{online=false;transition.flush();update();setTimeout(connect,2500);};
     socket.onmessage=event=>{
         let data;try{data=JSON.parse(event.data)}catch{return;}
         if(data.type==='theme'){applySharedTheme(data.theme);return;}
-        if(data.type==='offline'){online=false;return update();}
+        if(data.type==='offline'){online=false;transition.flush();return update();}
         if(data.type==='snapshot'){
-            online=true;song=data.song;options=data.options||{};progress=data.progress||{seconds:0,at:Date.now(),playing:false};
-            applySharedTheme(data.theme);text('title',song?.title||'');text('artist',song?.artist||'');text('album',song?.album||'');
-            artwork(song?.cover||'');update();
+            online=true;applySharedTheme(data.theme);
+            options=data.options||{};progress=data.progress||{seconds:0,at:Date.now(),playing:false};
+            transition.swap(songKey(data.song),data);
         }else if(data.type==='progress'){
             const changed=progress.playing!==data.progress.playing;progress=data.progress;
+            transition.updatePending(value=>value.progress?.id===data.progress.id?{...value,progress:data.progress}:value);
+            if(!progress.playing)transition.flush();
             if(changed)update();else tick();
         }
     };
 }
-window.addEventListener('obsSourceVisibleChanged',event=>{visible=!!event.detail.visible;update();});
-if(window.obsstudio)window.obsstudio.onVisibilityChange=value=>{visible=!!value;update();};
-document.addEventListener('visibilitychange',update);
-window.addEventListener('pagehide',()=>{online=false;rhythm.destroy();presence();socket?.close();});
+function visibility(){if(!sourceVisible())transition.flush();update();}
+window.addEventListener('obsSourceVisibleChanged',event=>{visible=!!event.detail.visible;visibility();});
+if(window.obsstudio)window.obsstudio.onVisibilityChange=value=>{visible=!!value;visibility();};
+document.addEventListener('visibilitychange',visibility);
+window.addEventListener('pagehide',()=>{online=false;transition.dispose();rhythm.destroy();presence();socket?.close();});
 setInterval(presence,1500);connect();

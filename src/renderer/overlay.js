@@ -1,6 +1,7 @@
 import { Lyrics } from '../lyrics/lyrics.js';
 import { applySharedTheme } from '../lyrics/shared-theme.js';
 import { installLyricMorph } from '../lyrics/lyric-morph.js';
+import { createContentTransition } from './content-transition.js';
 window.__lyricBarObsViewer = true;
 installLyricMorph();
 const listeners = {PlayProgress: new Set(), PlayState: new Set()};
@@ -14,10 +15,12 @@ let socket, online = false, ready = false, obsVisible = true;
 let progress = {seconds: 0, at: Date.now(), playing: false, id: '0', seek: 0};
 let previousId = null, previousPlaying = null, previousSeek = null, mounted = false, lastMessage = 0;
 const isVisible = () => obsVisible && (!!window.obsstudio || !document.hidden);
+const transition=createContentTransition({element:document.getElementById('bar-root'),visible:()=>mounted&&online&&isVisible()&&progress.playing,apply:displaySnapshot});
 function presence() {
     if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({type:'presence', obs: !!window.obsstudio, visible: isVisible(), ready: ready && online}));
 }
 function visibility() {
+    if(!isVisible())transition.flush();
     document.body.classList.toggle('mq-playing', !online || !isVisible());
     document.getElementById('bar-root').classList.toggle('obs-paused', !progress.playing);
     presence();
@@ -29,7 +32,7 @@ document.addEventListener('visibilitychange', visibility);
 function currentSeconds() { return progress.seconds; }
 function tick(force = false) {
     document.getElementById('bar-root').classList.toggle('obs-paused', !progress.playing);
-    if(!mounted || !online || !isVisible()) return;
+    if(!mounted || !online || !isVisible() || transition.pending) return;
     const button = document.querySelector('#main-player .btnp');
     button.classList.toggle('btnp-pause', progress.playing);
     if (force || progress.id !== previousId || progress.playing !== previousPlaying) {
@@ -65,7 +68,18 @@ function applySettings(settings) {
 }
 function offline() {
     online = false; ready = false; previousId = null;
+    transition.flush();
     visibility();
+}
+function displaySnapshot(data) {
+    progress=data.progress;
+    const next=data.lyrics,serialized=JSON.stringify(next);
+    const changed=window.__lyricsSerialized!==serialized;
+    window.__lyricsSerialized=serialized;
+    if(changed){window.currentLyrics=next;if(mounted)document.dispatchEvent(new CustomEvent('lyrics-updated',{detail:next}));}
+    if(!mounted){ReactDOM.render(React.createElement(Lyrics,{}),document.getElementById('bar-inner'));mounted=true;}
+    visibility();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{if(online){tick(true);ready=true;presence();}}));
 }
 function connect() {
     socket = new WebSocket('ws://' + location.host + '/view');
@@ -81,20 +95,18 @@ function connect() {
             applySettings(data.settings);
             applySharedTheme(data.theme || {colors:data.settings.colors,font:data.settings.fontFamily});
             progress = data.progress;
-            const next = data.lyrics;
-            // Repeated settings/sync snapshots must not restart every word animation.
-            const serialized = JSON.stringify(next);
-            const changed = window.__lyricsSerialized !== serialized;
-            window.__lyricsSerialized = serialized;
-            if(changed) { window.currentLyrics = next; if(mounted) document.dispatchEvent(new CustomEvent('lyrics-updated', {detail: next})); }
             online = true;
-            if(!mounted) { ReactDOM.render(React.createElement(Lyrics, {}), document.getElementById('bar-inner')); mounted = true; }
-            visibility();
-            requestAnimationFrame(() => requestAnimationFrame(() => { if(online) { tick(true); ready = true; presence(); } }));
-        } else if(data.type === 'progress') { progress = data.progress; tick(); }
+            // Same-song settings snapshots update in place without restarting words.
+            transition.swap(JSON.stringify(data.lyrics),data);
+        } else if(data.type === 'progress') {
+            progress = data.progress;
+            transition.updatePending(value=>({...value,progress:data.progress}));
+            if(!progress.playing)transition.flush();
+            tick();
+        }
     };
 }
 setInterval(presence, 1500);
-window.addEventListener('pagehide', () => { ready = false; presence(); socket?.close(); });
+window.addEventListener('pagehide', () => { ready = false; transition.dispose(); presence(); socket?.close(); });
 window.addEventListener('error', () => { ready = false; presence(); });
 connect();

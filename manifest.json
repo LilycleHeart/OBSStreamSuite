@@ -4,7 +4,7 @@
   "name": "OBS 播放组件",
   "slug": "OBSPlaybackSuite",
   "fork_of": "LyricBar",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "author": "LilycleHeart",
   "author_link": "https://github.com/LilycleHeart",
   "description": "OBS 歌曲信息、封面柔光、动态柱条与自适应词栏，统一 Material You 配色；需要 Node.js 20+。",

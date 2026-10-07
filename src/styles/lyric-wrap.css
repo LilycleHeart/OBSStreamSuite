@@ -3,6 +3,8 @@
 #bar-root.lyric-bar.obs-morph-ready{transition:opacity .22s ease,width var(--obs-morph-duration,.5s) ease,height var(--obs-morph-duration,.5s) ease}
 #bar-root .lyric-bar-inner,#bar-root .rnp-lyrics{min-height:0;width:100%;padding:0;margin:0;-webkit-mask:none!important;overflow:visible}
 #bar-root .lyric-bar-inner{position:absolute;top:0;right:0;width:var(--obs-measured-width,0px)!important;max-width:var(--obs-width-cap)!important;height:var(--obs-measured-height,0px)!important}
+#bar-root .lyric-bar-inner{opacity:1;transition:opacity .18s ease}
+#bar-root.track-switching .lyric-bar-inner{opacity:0}
 #bar-root .rnp-lyrics{position:relative;height:100%!important}
 #bar-root .rnp-lyrics-line{position:absolute;top:0;right:0;left:auto;width:var(--obs-line-width,var(--obs-measured-width,0px))!important;max-width:var(--obs-width-cap)!important;height:var(--obs-line-height,var(--obs-measured-height,0px))!important;box-sizing:border-box;padding:calc(var(--lyric-bar-font-size,20px)*.5) 15px;align-items:stretch;justify-content:center;line-height:1.2;transition-property:transform,opacity;transition-timing-function:var(--lyric-timing-function,ease),ease;will-change:transform}
 #bar-root .rnp-lyrics-single-line-wrapper{min-width:0!important;width:auto!important;max-width:100%!important;transform:none!important;flex-shrink:0}
