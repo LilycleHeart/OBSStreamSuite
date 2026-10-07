@@ -4,13 +4,13 @@
 
 **把网易云的歌曲信息与逐字歌词，带进你的直播画面。**
 
-Material You 动态配色 · 发光封面 · 分体卡片 · 自适应小词栏
+OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 · 自适应小词栏
 
-[![Release](https://img.shields.io/github/v/release/LilycleHeart/OBSPlaybackSuite?style=flat-square&label=version&color=8fd5c8)](https://github.com/LilycleHeart/OBSPlaybackSuite/releases/latest)
-[![Build](https://github.com/LilycleHeart/OBSPlaybackSuite/actions/workflows/build.yml/badge.svg)](https://github.com/LilycleHeart/OBSPlaybackSuite/actions/workflows/build.yml)
+[![Release](https://img.shields.io/github/v/release/LilycleHeart/OBSStreamSuite?style=flat-square&label=version&color=8fd5c8)](https://github.com/LilycleHeart/OBSStreamSuite/releases/latest)
+[![Build](https://github.com/LilycleHeart/OBSStreamSuite/actions/workflows/build.yml/badge.svg)](https://github.com/LilycleHeart/OBSStreamSuite/actions/workflows/build.yml)
 [![License](https://img.shields.io/badge/license-MIT-8fd5c8?style=flat-square)](LICENSE)
 
-[下载安装](https://github.com/LilycleHeart/OBSPlaybackSuite/releases/latest) · [快速开始](#快速开始) · [问题反馈](https://github.com/LilycleHeart/OBSPlaybackSuite/issues)
+[下载安装](https://github.com/LilycleHeart/OBSStreamSuite/releases/latest) · [快速开始](#快速开始) · [问题反馈](https://github.com/LilycleHeart/OBSStreamSuite/issues)
 
 ![OBS 直播套件市场封面与组件预览](preview.png)
 
@@ -53,7 +53,7 @@ Material You 动态配色 · 发光封面 · 分体卡片 · 自适应小词栏
 
 ### 2. 安装插件
 
-从 [Releases](https://github.com/LilycleHeart/OBSPlaybackSuite/releases/latest) 下载 `.plugin`，导入 BetterNCM 后重新打开网易云。打开 **「OBS 直播套件」** 设置并启用。
+从 [Releases](https://github.com/LilycleHeart/OBSStreamSuite/releases/latest) 下载 `.plugin`，导入 BetterNCM 后重新打开网易云。打开 **「OBS 直播套件」** 设置并启用。
 
 首次启动会在 BetterNCM 数据目录建立 `lyricbar-obs`，生成本机连接密钥并静默启动服务。插件启用后随网易云启动服务，无需单独设置 Windows 登录启动项。
 
@@ -110,7 +110,7 @@ Material You 动态配色 · 发光封面 · 分体卡片 · 自适应小词栏
 
 关闭或卸载插件后，客户端停止发布数据；已启动的 Node 服务可能继续空闲运行至进程退出。如需停止，可关闭对应 `lyricbar-obs/bridge-server.cjs` 进程。
 
-本次仅修改显示名称，插件标识仍为 `OBSPlaybackSuite`，原有设置与浏览器源地址继续沿用。
+仓库与英文名称为 OBSStreamSuite / OBS Stream Suite；插件标识仍为 `OBSPlaybackSuite`，原有设置与浏览器源地址继续沿用。
 
 </details>
 
@@ -122,7 +122,7 @@ npm run build
 npm test
 ```
 
-`src/` 是源码，`dist/` 是插件市场打包目录。GitHub Actions 会重建产物，检查认证、可见性生命周期、共享配色和凭据隔离。欢迎通过 [Issues](https://github.com/LilycleHeart/OBSPlaybackSuite/issues) 提交反馈，或发起 Pull Request。
+`src/` 是源码，`dist/` 是插件市场打包目录。GitHub Actions 会重建产物，检查认证、可见性生命周期、共享配色和凭据隔离。欢迎通过 [Issues](https://github.com/LilycleHeart/OBSStreamSuite/issues) 提交反馈，或发起 Pull Request。
 
 ## 致谢与许可
 

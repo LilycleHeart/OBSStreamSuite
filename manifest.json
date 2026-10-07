@@ -4,7 +4,7 @@
   "name": "OBS 直播套件",
   "slug": "OBSPlaybackSuite",
   "fork_of": "LyricBar",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "LilycleHeart",
   "author_link": "https://github.com/LilycleHeart",
   "description": "把网易云歌曲信息、发光封面和逐字歌词带进 OBS。统一 Material You 动态配色，支持切歌过渡与独立圆角；需要 Node.js 20+。",
