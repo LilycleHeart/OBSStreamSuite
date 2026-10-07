@@ -10,8 +10,10 @@
 .information{grid-area:info;min-width:0;min-height:0;display:grid;grid-template-rows:minmax(0,1.62fr) minmax(0,1fr);gap:9px}
 .song-heading,.timeline{min-width:0;min-height:0;background:var(--obs-surface);border-radius:var(--obs-card-radius,10px);color:var(--obs-primary)}
 .song-heading{display:flex;flex-direction:column;justify-content:center;padding:10px 15px;gap:5px}
-.title{font-size:22px;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
-.artist{font-size:15px;line-height:1.25;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.93;flex-shrink:0}
+.title{font-size:22px;line-height:1.2;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:clip;flex-shrink:0}
+.artist{font-size:15px;line-height:1.25;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:clip;opacity:.93;flex-shrink:0}
+.marquee-text{display:inline-block;width:max-content;max-width:none;white-space:nowrap;vertical-align:top;transform:translateX(0)}
+.is-overflowing .marquee-text{will-change:transform}
 .timeline{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:0 15px;font-size:15px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
 .timeline>span{flex-shrink:0}.rhythm{display:block;height:25px;min-width:0;flex:1;max-width:245px;overflow:visible}.rhythm path{stroke:currentColor;stroke-width:5;stroke-linecap:round;fill:none}
 .progress-strip{grid-area:progress;width:100%;height:var(--rail);border-radius:var(--obs-card-radius,20px);background:var(--obs-surface);overflow:hidden;position:relative}
