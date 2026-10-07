@@ -1,0 +1,23 @@
+name: Build and validate
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+      - name: Verify committed build
+        run: git diff --exit-code -- dist
+      - name: Package
+        shell: pwsh
+        run: Compress-Archive -Path dist/* -DestinationPath OBSPlaybackSuite-1.1.0.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OBSPlaybackSuite-1.1.0
+          path: OBSPlaybackSuite-1.1.0.zip

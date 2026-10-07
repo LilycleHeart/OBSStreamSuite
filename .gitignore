@@ -1,0 +1,6 @@
+node_modules/
+*.plugin
+.runtime/
+.test-runtime/
+bridge-config.json
+*.log

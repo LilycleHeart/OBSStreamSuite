@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/BetterNCM/BetterNCM-Plugins/refs/heads/master/manifest-schema.json",
+  "manifest_version": 1,
+  "name": "OBS 播放组件",
+  "slug": "OBSPlaybackSuite",
+  "fork_of": "LyricBar",
+  "version": "1.1.0",
+  "author": "LilycleHeart",
+  "author_link": "https://github.com/LilycleHeart",
+  "description": "OBS 歌曲信息、封面柔光、动态柱条与自适应词栏，统一 Material You 配色；需要 Node.js 20+。",
+  "preview": "preview.png",
+  "type": "extension",
+  "require_restart": true,
+  "requirements": [
+    "RefinedNowPlaying",
+    "MaterialYouTheme"
+  ],
+  "loadAfter": [
+    "RefinedNowPlaying",
+    "MaterialYouTheme"
+  ],
+  "incompatible": [
+    "LyricBar",
+    "OBSNowPlaying"
+  ],
+  "ncm-version-req": ">=2.10.0 <3.0.0",
+  "ncm3-compatible": false,
+  "betterncm_version": ">=1.0.0",
+  "injects": {
+    "Main": [
+      {
+        "file": "main.js"
+      }
+    ]
+  }
+}
