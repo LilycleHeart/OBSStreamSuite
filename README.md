@@ -51,8 +51,6 @@ OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 ·
 
 本套件是独立 OBS 插件，**无需停用或卸载 LyricBar**，也不会在网易云里额外创建软件内词栏。原 LyricBar 可继续安装使用。
 
-若还保留旧 OBSNowPlaying，在旧插件设置中关闭歌曲信息输出后再启用本套件即可，无需卸载；两个插件的同类 OBS 输出只启用一个。
-
 ### 2. 安装插件
 
 从 [Releases](https://github.com/LilycleHeart/OBSStreamSuite/releases/latest) 下载 `.plugin`，导入 BetterNCM 后重新打开网易云。打开 **「OBS 直播套件」** 设置并启用。
