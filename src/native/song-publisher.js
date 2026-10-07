@@ -1,7 +1,8 @@
 import { normalizeSong } from './metadata.js';
 const prefix = 'obs-now-playing-';
 const defaults = {enabled:true,progress:true,'hide-paused':true,rhythm:true,'cover-glow':true,'rhythm-framerate':20,'card-radius':10,'cover-radius':9};
-const readSetting=key=>{const value=localStorage.getItem(prefix+key);if(key==='card-radius'||key==='cover-radius'){const radius=value===null||value.trim()===''?defaults[key]:Number(value);return Number.isFinite(radius)?Math.max(0,Math.min(100,radius)):defaults[key];}if(key==='rhythm-framerate'){const fps=Number(value);return [10,15,20,30].includes(fps)?fps:20;}return value===null?defaults[key]:value!=='false';};
+export function initializeSongSettings(){for(const [key,value]of Object.entries(defaults)){const target='obs-stream-song-'+key;if(localStorage.getItem(target)===null)localStorage.setItem(target,localStorage.getItem(prefix+key)??String(value));}}
+const readSetting=key=>{const value=localStorage.getItem('obs-stream-song-'+key)??localStorage.getItem(prefix+key);if(key==='card-radius'||key==='cover-radius'){const radius=value===null||value.trim()===''?defaults[key]:Number(value);return Number.isFinite(radius)?Math.max(0,Math.min(100,radius)):defaults[key];}if(key==='rhythm-framerate'){const fps=Number(value);return [10,15,20,30].includes(fps)?fps:20;}return value===null?defaults[key]:value!=='false';};
 const setting=key=>key==='enabled'?readSetting(key)&&localStorage.getItem('obs-suite-enabled')!=='false':readSetting(key);
 let refreshSettings = () => {};
 const status = {text: '等待插件初始化'};
@@ -9,9 +10,10 @@ const panels = new Set();
 const statusListeners=new Set();function updateStatus(text){if(status.text===text)return;status.text=text;for(const listener of statusListeners)listener(text);}
 
 export async function startSongPublisher() {
-    if (window.__obsNowPlaying) return;
+    if (window.__obsStreamSongPublisher) return;
     await betterncm.utils.waitForElement('#main-player');
-    const state = window.__obsNowPlaying = {connected: false, viewers: 0};
+    const state = window.__obsStreamSongPublisher = {connected: false, viewers: 0};
+    window.__obsNowPlaying ||= state;
     let socket = null, retry = null, lastReply = 0, lastSent = 0, lastMetaRead = 0, metadataTimer = null;
     let song = null, lastSnapshot = '', nativeDuration = 0;
     let clock = {seconds: 0, at: Date.now(), playing: false, id: '0'};
@@ -75,6 +77,9 @@ export async function startSongPublisher() {
     function connect() {
         clearTimeout(retry);retry=null;
         if(!setting('enabled') || socket)return;
+        if(window.__obsNowPlaying!==state && localStorage.getItem(prefix+'enabled')!=='false'){
+            updateStatus('旧 OBSNowPlaying 输出已启用；请先在旧插件设置中关闭输出，无需卸载');retry=setTimeout(connect,2000);return;
+        }
         socket=new WebSocket(__SONG_PUBLISH_URL__);
         socket.onopen=()=>{state.connected=true;lastReply=Date.now();updateStatus('已连接本机服务，等待 OBS 显示');snapshot(true);};
         socket.onmessage=event=>{

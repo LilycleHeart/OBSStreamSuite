@@ -31,7 +31,7 @@ OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 ·
 - **有衔接的切歌**：旧内容淡出，新封面和歌曲信息淡入；快速切歌只显示最后一首。
 - **会伸缩的小词栏**：短句收窄，长句达到最大宽度后换行，底边固定并向上展开。
 - **保留歌词运动**：宿主 500ms 换句滚动、逐字高亮、宽高形变和暂停淡出。
-- **少一次重复渲染**：OBS 显示词栏时，软件内词栏停止渲染；隐藏或断开后恢复。
+- **可与原词栏共存**：本套件只创建 OBS 界面；OBS 显示词栏时自动隐藏原 LyricBar，隐藏或断开后恢复。
 - **独立外观设置**：歌曲卡片、封面、词栏分别调整圆角；封面柔光可开关。
 
 动态柱条是**播放状态驱动的视觉动画，不是实时音频 FFT**。支持 10 / 15 / 20 / 30 FPS，暂停和隐藏时停止更新。
@@ -49,7 +49,9 @@ OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 ·
 | 连接服务 | [Node.js 20+](https://nodejs.org/) |
 | OBS | 浏览器源；实测 OBS 29.1.3 / CEF 103 |
 
-安装整合版前，请停用或卸载 **LyricBar、旧 OBSNowPlaying**，避免功能重复。
+本套件是独立 OBS 插件，**无需停用或卸载 LyricBar**，也不会在网易云里额外创建软件内词栏。原 LyricBar 可继续安装使用。
+
+若还保留旧 OBSNowPlaying，在旧插件设置中关闭歌曲信息输出后再启用本套件即可，无需卸载；两个插件的同类 OBS 输出只启用一个。
 
 ### 2. 安装插件
 
@@ -88,7 +90,9 @@ OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 ·
 | 宽高形变时长 | 100–2000ms / 500ms |
 | 动态柱条帧率 | 10 / 15 / 20 / 30 FPS；默认 20 FPS |
 
-圆角设为 **0** 即为直角。修改会保存并同步到 OBS。词栏排版、翻译、逐字动画帧率和软件内位置在设置页的折叠项中。
+圆角设为 **0** 即为直角。修改会保存并同步到 OBS。字号、翻译、对齐、逐字动画帧率与时间偏移在「OBS 歌词排版与逐字动画」中。
+
+OBS 歌词设置首次继承已有词栏的设置，之后独立保存，修改 OBS 设置不会覆盖原 LyricBar 的排版或位置。
 
 <details>
 <summary><strong>连接或显示遇到问题？</strong></summary>
@@ -96,7 +100,7 @@ OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 ·
 - **服务未连接**：确认已安装 Node.js 20+，点击「启动 / 检查连接」；安装 Node 后也可重新打开网易云。
 - **OBS 没有画面**：确认浏览器源地址正确、插件已启用、网易云正在播放；两个组件默认在暂停时隐藏。可刷新浏览器源。
 - **词栏被裁切**：为浏览器源保留足够高度；420px 是向上展开的预留区，不是固定词栏高度。
-- **软件内词栏不显示**：OBS 正在显示时会主动停止软件内词栏渲染。隐藏 OBS 源或断开后恢复。
+- **软件内词栏不显示**：OBS 正在显示时会主动隐藏原 LyricBar。隐藏 OBS 源或断开后恢复；软件内词栏由 LyricBar 原插件提供。
 - **市场里还找不到**：收录需要维护者审核；请先使用 Release 安装包。
 
 </details>
@@ -110,7 +114,7 @@ OBS Stream Suite · Material You 动态配色 · 发光封面 · 分体卡片 ·
 
 关闭或卸载插件后，客户端停止发布数据；已启动的 Node 服务可能继续空闲运行至进程退出。如需停止，可关闭对应 `lyricbar-obs/bridge-server.cjs` 进程。
 
-仓库与英文名称为 OBSStreamSuite / OBS Stream Suite；插件标识仍为 `OBSPlaybackSuite`，原有设置与浏览器源地址继续沿用。
+仓库与英文名称为 OBSStreamSuite / OBS Stream Suite；插件标识仍为 `OBSPlaybackSuite`，浏览器源地址继续沿用。旧设置仅在首次初始化时读入，OBS 歌词后续设置使用独立的 `obs-lyrics-*` 存储，不修改原插件设置。
 
 </details>
 
@@ -126,6 +130,6 @@ npm test
 
 ## 致谢与许可
 
-基于 [solstice23/lyric-bar-netease](https://github.com/solstice23/lyric-bar-netease) 的软件内词栏与设置界面，部分歌词样式和渲染逻辑来自 [RefinedNowPlaying](https://github.com/solstice23/refined-now-playing-netease)。动态主题依赖 MaterialYouTheme。
+OBS 词栏重用 [solstice23/lyric-bar-netease](https://github.com/solstice23/lyric-bar-netease) 与 [RefinedNowPlaying](https://github.com/solstice23/refined-now-playing-netease) 的部分样式、渲染逻辑；本套件不加载它们的软件内词栏组件。歌词数据由 RefinedNowPlaying 提供，动态主题依赖 MaterialYouTheme。
 
 项目采用 [MIT License](LICENSE)。原始作者署名与 MIT 许可保留在 `licenses/`、`vendor/lyric-bar/LICENSE`；React、ReactDOM、ws 许可随包提供。

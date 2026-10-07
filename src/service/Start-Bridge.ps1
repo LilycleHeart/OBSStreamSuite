@@ -21,8 +21,8 @@ try {
     $taskNodeMajor = [int]((& $taskNode --version).Trim().TrimStart('v').Split('.')[0])
     if ($taskNodeMajor -lt 20) { throw 'Node.js 20 or newer is required.' }
     if ($taskHealth) {
-        $taskServer = Join-Path $taskDestination 'bridge-server.cjs'
-        Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object {$_.CommandLine -like ('*'+$taskServer+'*')} | ForEach-Object { Stop-Process -Id $_.ProcessId }
+        $taskOwnerIds = @(Get-NetTCPConnection -LocalAddress '127.0.0.1' -LocalPort $taskConfig.port -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess)
+        Get-CimInstance Win32_Process -Filter "Name='node.exe'" | Where-Object { $_.ProcessId -in $taskOwnerIds -and $_.CommandLine -match '(?:^|[\\/"\s])bridge-server\.cjs(?:["\s]|$)' } | ForEach-Object { Stop-Process -Id $_.ProcessId }
     }
     New-Item -ItemType Directory -Path (Join-Path $taskDestination 'public') -Force | Out-Null
     foreach ($taskFile in $taskFiles) { Copy-Item -LiteralPath (Join-Path $taskSource $taskFile) -Destination (Join-Path $taskDestination $taskFile) -Force }

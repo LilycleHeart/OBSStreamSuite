@@ -1,13 +1,8 @@
-import fs from 'node:fs';import path from 'node:path';import esbuild from 'esbuild';import * as sass from 'sass';
+import fs from 'node:fs';import esbuild from 'esbuild';import * as sass from 'sass';
 fs.mkdirSync('dist/service/public',{recursive:true});fs.mkdirSync('dist/licenses',{recursive:true});
 const defines={__SONG_VIEW_URL__:'window.__obsSuiteRuntime.songViewUrl',__LYRIC_VIEW_URL__:'window.__obsSuiteRuntime.lyricViewUrl',__HEALTH_URL__:'window.__obsSuiteRuntime.healthUrl',__SONG_PUBLISH_URL__:'window.__obsSuiteRuntime.songPublishUrl',__OBS_PUBLISH_URL__:'window.__obsSuiteRuntime.lyricPublishUrl',__OBS_OVERLAY_URL__:'window.__obsSuiteRuntime.lyricViewUrl','process.env.NODE_ENV':'"production"'};
 const common={bundle:true,format:'iife',target:'chrome91',loader:{'.js':'jsx'},jsxFactory:'React.createElement',jsxFragment:'React.Fragment',define:defines,minify:true};
-const nativePlugin={name:'native-css-and-lyric-entry',setup(build){
-    build.onLoad({filter:/\.scss$/},args=>({contents:`const style=document.createElement('style');style.textContent=${JSON.stringify(sass.compile(args.path,{logger:sass.Logger.silent}).css)};document.head.appendChild(style);`,loader:'js'}));
-    build.onResolve({filter:/^\.\/lyrics\.js$/},args=>args.importer.replaceAll('\\','/').endsWith('vendor/lyric-bar/src/lyric-bar.js')?{path:path.resolve('src/lyrics/lyrics.js')}:undefined);
-    build.onResolve({filter:/native-bridge\.js$/},()=>({path:path.resolve('src/native/lyric-bridge.js')}));
-}};
-await esbuild.build({...common,entryPoints:['src/index.js'],outfile:'dist/main.js',plugins:[nativePlugin]});
+await esbuild.build({...common,entryPoints:['src/index.js'],outfile:'dist/main.js'});
 const viewerOnly={name:'viewer-only',setup(build){build.onResolve({filter:/native-bridge\.js$/},()=>({path:'noop',namespace:'viewer'}));build.onLoad({filter:/.*/,namespace:'viewer'},()=>({contents:'export function installObsBridge(){}'}));}};
 for(const file of ['nowplaying','overlay']){await esbuild.build({...common,entryPoints:['src/renderer/'+file+'.js'],outfile:'dist/service/public/'+file+'.js',plugins:[viewerOnly]});fs.copyFileSync('src/renderer/'+file+'.html','dist/service/public/'+file+'.html');}
 let card=fs.readFileSync('src/renderer/nowplaying.css','utf8')+'\n#card.cover-glow-off .art-frame{box-shadow:none!important}';fs.writeFileSync('dist/service/public/nowplaying.css',card);

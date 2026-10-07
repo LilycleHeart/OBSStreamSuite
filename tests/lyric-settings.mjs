@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import {initializeLyricSettings,readLyricSetting,writeLyricSetting} from '../src/native/lyric-settings.js';
+import {initializeSongSettings,getSongSetting} from '../src/native/song-publisher.js';
+const values=new Map([['lyric-bar-lyric-font-size','22'],['lyric-bar-karaoke-framerate','30'],['lyric-bar-show-translation','false'],['lyric-bar-posX','left']]);
+globalThis.localStorage={getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,String(value))};
+globalThis.document=new EventTarget();
+const original=JSON.stringify([...values]);initializeLyricSettings();
+assert.equal(readLyricSetting('lyric-font-size'),'22');assert.equal(readLyricSetting('karaoke-framerate'),'30');assert.equal(readLyricSetting('show-translation'),'false');
+assert.equal(JSON.stringify([...values].filter(([key])=>key.startsWith('lyric-bar-'))),original);
+let obsEvents=0,originalEvents=0;document.addEventListener('obs-lyrics-lyric-font-size',()=>obsEvents++);document.addEventListener('lb-lyric-font-size',()=>originalEvents++);
+writeLyricSetting('lyric-font-size',28);initializeLyricSettings();
+assert.equal(readLyricSetting('lyric-font-size'),'28');assert.equal(values.get('lyric-bar-lyric-font-size'),'22');assert.equal(values.get('lyric-bar-posX'),'left');assert.equal(obsEvents,1);assert.equal(originalEvents,0);
+values.set('lyric-bar-karaoke-framerate','120');initializeLyricSettings();assert.equal(readLyricSetting('karaoke-framerate'),'30');
+values.set('obs-now-playing-enabled','false');values.set('obs-now-playing-card-radius','0');initializeSongSettings();assert.equal(getSongSetting('enabled'),false);assert.equal(getSongSetting('card-radius'),0);
+values.set('obs-stream-song-enabled','true');values.set('obs-stream-song-card-radius','28');initializeSongSettings();assert.equal(getSongSetting('enabled'),true);assert.equal(getSongSetting('card-radius'),28);assert.equal(values.get('obs-now-playing-enabled'),'false');assert.equal(values.get('obs-now-playing-card-radius'),'0');
+console.log('Passed: one-time preference migration, independent OBS edits, original settings and events unchanged.');
