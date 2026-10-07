@@ -699,7 +699,7 @@ body.mq-playing .lyric-bar {
   z-index: 2;
 }
 html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:transparent!important}body{--sidebar-width:0px;--lyric-timing-function:ease;--lyric-translation-size-em:1;color:var(--ncm-text);font-family:Microsoft YaHei,sans-serif}#bar-root.lyric-bar{right:0;bottom:0;left:auto;top:auto;max-width:100vw;border-radius:12px;transition:opacity .22s ease,height .5s ease,width .5s ease}#bar-root.obs-paused{opacity:0!important;pointer-events:none}
-#bar-root.lyric-bar{background:var(--obs-surface);color:var(--obs-ink);border-radius:var(--obs-lyric-radius,16px);box-shadow:inset 0 0 0 1px rgba(var(--obs-primary-rgb),.18)}
+#bar-root.lyric-bar{background:var(--obs-surface);color:var(--obs-ink);border-radius:var(--obs-lyric-radius,16px);border:0;box-shadow:none}
 #bar-root .rnp-lyrics{--rnp-accent-color-shade-2:var(--obs-primary);--rnp-accent-color:var(--obs-primary);color:var(--obs-primary)}
 
 /* Dynamic dimensions, bounded by the player's content width, anchored bottom-right. */
