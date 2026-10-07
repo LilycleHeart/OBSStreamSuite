@@ -120,7 +120,7 @@ export function Lyrics(props) {
 	}, [hasTranslation, hasRomaji, showTranslation, showRomaji, fontSize]);
 
 	const onResize = () => {
-		shouldTransit.current = false;
+		if (!window.__lyricBarObsViewer) shouldTransit.current = false;
 		const container = containerRef.current;
 		if (!container) return;
 		setContainerHeight(container.clientHeight);
@@ -154,7 +154,7 @@ export function Lyrics(props) {
 	const focusLine = Math.min(Math.max(currentLineForScrolling, 0), Math.max((lyrics?.length ?? 1) - 1, 0));
 	const windowStart = Math.max(0, focusLine - 2);
 	const windowEnd = Math.min(lyrics?.length ?? 0, focusLine + 3);
-	const getLineTransform = (index) => ({
+	const getLineTransform = (index) => window.__lyricBarObsViewer && window.__obsLyricGeometry ? window.__obsLyricGeometry.transform(index,focusLine,containerHeight,shouldTransit.current,lyrics[focusLine]?.isInterlude) : ({
 		top: (index - focusLine) * (containerHeight + 5) + (index > focusLine && lyrics[focusLine]?.isInterlude ? 50 : 0),
 		delay: 0,
 		duration: shouldTransit.current ? 500 : 0
@@ -319,6 +319,7 @@ function Line(props) {
 		<div
 			ref={lineRef}
 			className={`rnp-lyrics-line ${props.line.isInterlude ? 'rnp-interlude' : ''}`}
+			data-lyric-index={props.id}
 			offset={offset}
 			style={{
 				transform: `

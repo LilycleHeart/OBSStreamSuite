@@ -26,13 +26,12 @@ function visibility() {
 window.addEventListener('obsSourceVisibleChanged', event => { obsVisible = !!event.detail.visible; visibility(); });
 if (window.obsstudio) window.obsstudio.onVisibilityChange = visible => { obsVisible = !!visible; visibility(); };
 document.addEventListener('visibilitychange', visibility);
-function currentSeconds() { return progress.seconds + (progress.playing ? Math.max(0, Date.now() - progress.at) / 1000 : 0); }
+function currentSeconds() { return progress.seconds; }
 function tick(force = false) {
     document.getElementById('bar-root').classList.toggle('obs-paused', !progress.playing);
     if(!mounted || !online || !isVisible()) return;
     const button = document.querySelector('#main-player .btnp');
     button.classList.toggle('btnp-pause', progress.playing);
-    emit('PlayProgress', progress.id, currentSeconds());
     if (force || progress.id !== previousId || progress.playing !== previousPlaying) {
         emit('PlayState', progress.id, progress.playing ? 'resume' : 'pause');
         previousId = progress.id; previousPlaying = progress.playing;
@@ -41,6 +40,7 @@ function tick(force = false) {
         window.channel.call('audioplayer.seek', () => {}, [progress.id, 'obs', currentSeconds()]);
         previousSeek = progress.seek;
     }
+    emit('PlayProgress', progress.id, currentSeconds());
 }
 function applySettings(settings) {
     for(const [key, value] of Object.entries(settings)) {
@@ -92,7 +92,6 @@ function connect() {
         } else if(data.type === 'progress') { progress = data.progress; tick(); }
     };
 }
-setInterval(() => { if(progress.playing) tick(); }, 100);
 setInterval(presence, 1500);
 window.addEventListener('pagehide', () => { ready = false; presence(); socket?.close(); });
 window.addEventListener('error', () => { ready = false; presence(); });

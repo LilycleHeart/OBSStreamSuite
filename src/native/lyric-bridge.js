@@ -4,7 +4,7 @@ export function installObsBridge() {
     if (window.__lyricBarObsViewer || window.__lyricBarObs) return;
     const state = window.__lyricBarObs = {connected: false, active: false, viewers: 0, status: '等待本机连接服务'};
     const enabled=()=>localStorage.getItem('lyric-bar-obs-enabled')!=='false'&&localStorage.getItem('obs-suite-enabled')!=='false';
-    let socket = null, retry = null, lastReply = 0, lastSent = 0, lastPlaying = null;
+    let socket = null, retry = null, lastReply = 0;
     let clock = {seconds: 0, at: Date.now(), playing: false, id: '0', seek: 0};
     let lyrics = window.currentLyrics || {lyrics: []};
     let globalOffset = null;
@@ -35,13 +35,13 @@ export function installObsBridge() {
         const expected = clock.seconds + (clock.playing ? (now - clock.at) / 1000 : 0);
         const didSeek = id !== clock.id || Math.abs(Number(seconds) - expected) > 0.6;
         clock = {seconds: Number(seconds) || 0, at: now, playing: playing(), id, seek: clock.seek + Number(didSeek)};
-        if (state.viewers && (didSeek || now - lastSent >= 200 || lastPlaying !== clock.playing)) {
-            lastSent = now; lastPlaying = clock.playing; send({type: 'progress', progress: clock});
+        if (state.viewers) {
+            send({type: 'progress', progress: clock});
         }
     }
     function playState(id) {
         const now = Date.now();
-        clock = {...clock, seconds: id === clock.id ? clock.seconds + (clock.playing ? (now - clock.at) / 1000 : 0) : 0, at: now, id, playing: playing()};
+        clock = {...clock, seconds: id === clock.id ? clock.seconds : 0, at: now, id, playing: playing()};
         if (state.viewers) send({type: 'progress', progress: clock});
         // Native button classes may settle just after the callback.
         setTimeout(() => { if (clock.playing !== playing()) playState(clock.id); }, 80);

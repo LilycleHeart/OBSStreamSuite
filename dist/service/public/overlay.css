@@ -705,10 +705,10 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:t
 /* Dynamic dimensions, bounded by the player's content width, anchored bottom-right. */
 #bar-root.lyric-bar,#bar-root.lyric-bar:not(.adaptive-width){--obs-side-gap:24px;--obs-width-cap:min(calc(100vw - var(--obs-side-gap)*2),var(--obs-custom-cap,100000px));width:var(--obs-measured-width,0px)!important;max-width:var(--obs-width-cap)!important;height:var(--obs-measured-height,0px)!important;bottom:0;top:auto;right:var(--obs-side-gap)!important;left:auto!important;box-sizing:border-box;transition:opacity .22s ease}
 #bar-root.lyric-bar.obs-morph-ready{transition:opacity .22s ease,width var(--obs-morph-duration,.5s) ease,height var(--obs-morph-duration,.5s) ease}
-#bar-root .lyric-bar-inner,#bar-root .rnp-lyrics{height:auto!important;min-height:0;width:100%;padding:0;margin:0;-webkit-mask:none!important;overflow:visible}
-#bar-root .lyric-bar-inner{position:absolute;bottom:0;right:0;width:max-content!important;max-width:var(--obs-width-cap)!important}
-#bar-root .rnp-lyrics-line:not([offset="0"]){display:none!important}
-#bar-root .rnp-lyrics-line[offset="0"]{position:relative!important;transform:none!important;top:auto!important;left:auto!important;width:100%!important;max-width:none!important;height:auto!important;min-height:calc(var(--lyric-bar-font-size,20px)*1.4 + 20px);box-sizing:border-box;padding:10px 15px;align-items:stretch;justify-content:center;line-height:1.4;will-change:auto;animation:obs-wrap-line-in .16s ease-out}
+#bar-root .lyric-bar-inner,#bar-root .rnp-lyrics{min-height:0;width:100%;padding:0;margin:0;-webkit-mask:none!important;overflow:visible}
+#bar-root .lyric-bar-inner{position:absolute;top:0;right:0;width:var(--obs-measured-width,0px)!important;max-width:var(--obs-width-cap)!important;height:var(--obs-measured-height,0px)!important}
+#bar-root .rnp-lyrics{position:relative;height:100%!important}
+#bar-root .rnp-lyrics-line{position:absolute;top:0;right:0;left:auto;width:var(--obs-line-width,var(--obs-measured-width,0px))!important;max-width:var(--obs-width-cap)!important;height:var(--obs-line-height,var(--obs-measured-height,0px))!important;box-sizing:border-box;padding:calc(var(--lyric-bar-font-size,20px)*.5) 15px;align-items:stretch;justify-content:center;line-height:1.2;transition-property:transform,opacity;transition-timing-function:var(--lyric-timing-function,ease),ease;will-change:transform}
 #bar-root .rnp-lyrics-single-line-wrapper{min-width:0!important;width:auto!important;max-width:100%!important;transform:none!important;flex-shrink:0}
 #bar-root .rnp-lyrics-single-line-wrapper>div{min-width:0!important;width:auto!important;max-width:100%!important;white-space:normal!important;overflow-wrap:anywhere;word-break:normal}
 #bar-root .rnp-karaoke-word{max-width:100%;white-space:normal!important;overflow-wrap:anywhere;vertical-align:baseline}
@@ -716,6 +716,9 @@ html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:t
 #bar-root.text-align-left .rnp-lyrics-single-line-wrapper{text-align:left}
 #bar-root.text-align-center .rnp-lyrics-single-line-wrapper{text-align:center}
 #bar-root.text-align-right .rnp-lyrics-single-line-wrapper{text-align:right}
-@keyframes obs-wrap-line-in{from{opacity:0}to{opacity:1}}
+#bar-root .obs-lyric-measure{position:absolute;top:0;right:0;visibility:hidden!important;pointer-events:none;width:max-content;max-width:var(--obs-width-cap);height:auto;contain:layout style}
+#bar-root .obs-lyric-measure .rnp-lyrics{position:relative;width:max-content!important;max-width:var(--obs-width-cap)!important;height:auto!important}
+#bar-root .obs-lyric-measure .rnp-lyrics-line{position:relative!important;top:auto!important;right:auto!important;left:auto!important;width:max-content!important;max-width:var(--obs-width-cap)!important;height:auto!important;min-height:calc(var(--lyric-bar-font-size,20px)*2.2)}
+#bar-root .obs-lyric-measure,#bar-root .obs-lyric-measure *{transform:none!important;transition:none!important;animation:none!important;will-change:auto!important}
 
 @media(max-width:450px){#bar-root.lyric-bar,#bar-root.lyric-bar:not(.adaptive-width){--obs-side-gap:19px}}
