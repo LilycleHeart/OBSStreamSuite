@@ -16,8 +16,8 @@ jobs:
         run: git diff --exit-code -- dist
       - name: Package
         shell: pwsh
-        run: Compress-Archive -Path dist/* -DestinationPath OBSPlaybackSuite-1.1.1.zip
+        run: Compress-Archive -Path dist/* -DestinationPath OBSPlaybackSuite-1.1.2.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: OBSPlaybackSuite-1.1.1
-          path: OBSPlaybackSuite-1.1.1.zip
+          name: OBSPlaybackSuite-1.1.2
+          path: OBSPlaybackSuite-1.1.2.zip

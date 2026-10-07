@@ -1,7 +1,7 @@
 import { normalizeSong } from './metadata.js';
 const prefix = 'obs-now-playing-';
-const defaults = {enabled:true,progress:true,'hide-paused':true,rhythm:true,'cover-glow':true,'rhythm-framerate':20};
-const readSetting=key=>{const value=localStorage.getItem(prefix+key);if(key==='rhythm-framerate'){const fps=Number(value);return [10,15,20,30].includes(fps)?fps:20;}return value===null?defaults[key]:value!=='false';};
+const defaults = {enabled:true,progress:true,'hide-paused':true,rhythm:true,'cover-glow':true,'rhythm-framerate':20,'card-radius':10,'cover-radius':9};
+const readSetting=key=>{const value=localStorage.getItem(prefix+key);if(key==='card-radius'||key==='cover-radius'){const radius=value===null||value.trim()===''?defaults[key]:Number(value);return Number.isFinite(radius)?Math.max(0,Math.min(100,radius)):defaults[key];}if(key==='rhythm-framerate'){const fps=Number(value);return [10,15,20,30].includes(fps)?fps:20;}return value===null?defaults[key]:value!=='false';};
 const setting=key=>key==='enabled'?readSetting(key)&&localStorage.getItem('obs-suite-enabled')!=='false':readSetting(key);
 let refreshSettings = () => {};
 const status = {text: '等待插件初始化'};

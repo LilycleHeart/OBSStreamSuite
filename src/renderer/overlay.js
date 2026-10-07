@@ -59,6 +59,8 @@ function applySettings(settings) {
     const duration=Math.max(100,Math.min(2000,Number(settings['obs-morph-duration'])||500));
     bar.style.setProperty('--obs-custom-cap',width?width+'px':'100000px');
     bar.style.setProperty('--obs-morph-duration',duration+'ms');
+    const radius=settings['obs-radius']===null||settings['obs-radius']===undefined?16:Number(settings['obs-radius']);
+    bar.style.setProperty('--obs-lyric-radius',(Number.isFinite(radius)?Math.max(0,Math.min(100,radius)):16)+'px');
     document.body.style.fontFamily = 'inherit';
 }
 function offline() {

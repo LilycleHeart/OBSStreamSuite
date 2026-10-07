@@ -1,5 +1,5 @@
 // The only host-side animation change is useLyricVisibility's OBS ownership flag.
-const SETTINGS = ['lyric-font-size', 'show-translation', 'show-romaji', 'use-karaoke-lyrics', 'first-line-bold', 'adaptive-width', 'text-align', 'opacity', 'lyric-offset', 'karaoke-framerate', 'lyric-bar-width', 'obs-max-width', 'obs-morph-duration'];
+const SETTINGS = ['lyric-font-size', 'show-translation', 'show-romaji', 'use-karaoke-lyrics', 'first-line-bold', 'adaptive-width', 'text-align', 'opacity', 'lyric-offset', 'karaoke-framerate', 'lyric-bar-width', 'obs-max-width', 'obs-morph-duration', 'obs-radius'];
 export function installObsBridge() {
     if (window.__lyricBarObsViewer || window.__lyricBarObs) return;
     const state = window.__lyricBarObs = {connected: false, active: false, viewers: 0, status: '等待本机连接服务'};

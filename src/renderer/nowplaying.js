@@ -22,6 +22,10 @@ function tick(){
 }
 function update(){
     const card=$('card'), wanted=show(), fade=++fadeGeneration;
+    for(const [key,fallback]of [['card-radius',10],['cover-radius',9]]){
+        const radius=options[key]===null||options[key]===undefined?fallback:Number(options[key]);
+        card.style.setProperty('--obs-'+key,(Number.isFinite(radius)?Math.max(0,Math.min(100,radius)):fallback)+'px');
+    }
     clearTimeout(fadeTimer);
     if(wanted){
         const wasHidden=card.hidden;card.hidden=false;
