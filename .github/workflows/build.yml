@@ -16,8 +16,8 @@ jobs:
         run: git diff --exit-code -- dist
       - name: Package
         shell: pwsh
-        run: Compress-Archive -Path dist/* -DestinationPath OBSStreamSuite-1.4.0.zip
+        run: Compress-Archive -Path dist/* -DestinationPath OBSStreamSuite-1.4.1.zip
       - uses: actions/upload-artifact@v4
         with:
-          name: OBSStreamSuite-1.4.0
-          path: OBSStreamSuite-1.4.0.zip
+          name: OBSStreamSuite-1.4.1
+          path: OBSStreamSuite-1.4.1.zip

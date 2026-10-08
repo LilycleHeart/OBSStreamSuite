@@ -10,7 +10,7 @@ let visible=true, lastArt='', generation=0, timer=null;
 let fadeTimer=null, fadeGeneration=0;
 const text=(id,value)=>{const element=$(id);if(element&&element.textContent!==value)(element.querySelector('.marquee-text')||element).textContent=value;};
 const songKey=value=>value?String(value.id??[value.title,value.artist].join('|'))+'|'+(value.cover||''):'';
-const transition=createContentTransition({element:$('card'),visible:()=>show()&&!$('card').hidden,prepare:data=>preloadArtwork(data.song?.cover||''),apply:displaySnapshot});
+const transition=createContentTransition({element:$('card'),visible:()=>show()&&!$('card').hidden,prepare:data=>preloadArtwork(data.song?.cover||''),apply:displaySnapshot,enterClass:'track-entering'});
 function sourceVisible(){return visible && (!!window.obsstudio || !document.hidden);}
 function show(){return online && !!song?.title && sourceVisible() && !(options['hide-paused']!==false && !progress.playing);}
 function presence(){if(socket?.readyState===WebSocket.OPEN)socket.send(JSON.stringify({type:'presence',obs:!!window.obsstudio,visible:sourceVisible(),ready:show()}));}
